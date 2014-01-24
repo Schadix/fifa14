@@ -22,7 +22,7 @@ object Facebook extends Controller {
   val conf: Config = ConfigFactory.parseFile(new File("/etc/fifa14/config.properties"));
   val APP_ID = conf.getString("FB_APP_ID")
   val CLIENT_SECRET = conf.getString("FB_CLIENT_SECRET")
-  val REDIRECT_URL = "http://schadix.no-ip.org:9000/fbResponse"
+  val REDIRECT_URL = conf.getString("FB_REDIRECT_URL")
   val ACCESS_TOKEN = APP_ID + "|" + CLIENT_SECRET
   val FB_SCOPE="read_friendlists"
   val IS_FRIENDS_WITH = "is friends with"
@@ -112,8 +112,10 @@ object Facebook extends Controller {
     var userVertex = graph.getVertex(userId)
     // first check if userId exists
     if (userVertex==null) userVertex = graph.addVertex(userId)
-    val friends:java.lang.Iterable[Vertex]  = userVertex.getVertices(Direction.OUT, "is friends with")
+    val friends:java.lang.Iterable[Vertex]  = userVertex.getVertices(Direction.OUT, IS_FRIENDS_WITH)
     // get friends list and verify with other list
+
+
 
     val people = (fbFriendsJson \ "data").validate[List[FBUser]].get
     people.foreach(person => {
